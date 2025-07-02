@@ -8,7 +8,7 @@ st.title("📋 이력서 & 모집요강 적합도 분석기")
 api_key = st.text_input("🗝 OpenAI API 키를 입력하세요", type="password")
 
 if api_key:
-    openai.api_key = api_key
+    client = openai.OpenAI(api_key=api_key)
 
     st.markdown("### 📝 Step 1: 모집요강 입력")
     job_description = st.text_area("모집요강 (지원자격, 우대사항 등)", height=200)
@@ -37,12 +37,14 @@ if api_key:
 """
 
             try:
-                response = openai.ChatCompletion.create(
+                response = client.chat.completions.create(
                     model="gpt-4",
-                    messages=[{"role": "user", "content": prompt}],
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
                     temperature=0.6
                 )
-                answer = response["choices"][0]["message"]["content"]
+                answer = response.choices[0].message.content
                 st.markdown("### ✅ 분석 결과")
                 st.write(answer)
             except Exception as e:
